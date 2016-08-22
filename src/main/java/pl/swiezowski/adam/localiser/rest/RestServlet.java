@@ -1,5 +1,7 @@
 package pl.swiezowski.adam.localiser.rest;
 
+import java.util.Optional;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -9,10 +11,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import pl.swiezowski.adam.localiser.dto.ResponseDTO;
+import pl.swiezowski.adam.localiser.dto.ResponseDTOImpl;
 import pl.swiezowski.adam.localiser.entities.Localisation;
 import pl.swiezowski.adam.localiser.hibernate.LocationDAO;
  
-@Path("/rest")
+@Path("/localisation")
 public class RestServlet {
  
 	LocationDAO locationDAO;
@@ -32,7 +35,6 @@ public class RestServlet {
 	}
 	
 	@PUT
-	@Path("/locale")
 	@Consumes("application/json")
 	@Produces("application/json")
 	public Response addLocalisation(Localisation localisation) {
@@ -41,6 +43,24 @@ public class RestServlet {
  
 		return Response.status(200).entity(response).build();
  
+	}
+	
+	@GET
+	@Path("/{code}")
+	@Produces("application/json")
+	public Response getLocalisation(@PathParam("code") String code) {
+		Optional<Localisation> localisation = locationDAO.getLocalisation(code);
+		if(localisation.isPresent()){
+			return Response.status(200).entity(localisation.get()).build();
+		}
+		
+		return Response.status(400).entity(prepareErrorDTO()).build();
+	}
+	
+	private ResponseDTO prepareErrorDTO(){
+		ResponseDTO response = new ResponseDTOImpl();
+		response.setStatus("No localisation found!");
+		return response;
 	}
  
 }

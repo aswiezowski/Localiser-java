@@ -10,6 +10,7 @@ import org.apache.catalina.webresources.StandardRoot;
 
 
 public class Main {
+	public static String SERVER_HOST = "http://localhost:8080";
 
     public static void main(String[] args) throws Exception {
 
