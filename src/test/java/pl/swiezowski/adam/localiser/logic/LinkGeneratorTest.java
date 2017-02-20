@@ -15,7 +15,7 @@ public class LinkGeneratorTest {
 
 	@Test
 	public void testRandomLinkUniquess(){
-		LinkGenerator linkGenerator = new LinkGenerator();
+		CodeGenerator linkGenerator = new CodeGenerator();
 		HashSet<String> links = new HashSet<String>(100);
 		for(int i=0; i<NUMBER_OF_TESTED_LINKS; i++){
 			String link = linkGenerator.generateLink();
@@ -25,7 +25,7 @@ public class LinkGeneratorTest {
 	
 	@Test
 	public void testLinkValueCorectness(){
-		LinkGenerator linkGenerator = new LinkGenerator();
+		CodeGenerator linkGenerator = new CodeGenerator();
 		Pattern pattern = Pattern.compile(LINK_PATTERN);
 		for(int i=0; i<NUMBER_OF_TESTED_LINKS; i++){
 			String link = linkGenerator.generateLink();

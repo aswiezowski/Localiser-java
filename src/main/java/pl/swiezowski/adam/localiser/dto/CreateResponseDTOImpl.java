@@ -4,6 +4,14 @@ public class CreateResponseDTOImpl extends ResponseDTOImpl implements CreateResp
 
 	private String code;
 
+	public CreateResponseDTOImpl(){
+		
+	}
+	
+	public CreateResponseDTOImpl(String status) {
+		super(status);
+	}
+
 	public String getCode() {
 		return code;
 	}

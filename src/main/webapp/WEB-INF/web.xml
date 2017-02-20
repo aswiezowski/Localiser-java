@@ -23,7 +23,7 @@
 
 	<servlet-mapping>
 		<servlet-name>jersey-servlet</servlet-name>
-		<url-pattern>/rest/*</url-pattern>
+		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
     <listener>  
         <listener-class>pl.swiezowski.adam.localiser.hibernate.HibernateListener</listener-class>  

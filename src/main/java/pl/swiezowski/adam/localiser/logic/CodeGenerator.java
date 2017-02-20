@@ -3,11 +3,11 @@ package pl.swiezowski.adam.localiser.logic;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-public class LinkGenerator {
+public class CodeGenerator {
 
 	SecureRandom random;
 	
-	public LinkGenerator(){
+	public CodeGenerator(){
 		random = new SecureRandom();
 	}
 	
