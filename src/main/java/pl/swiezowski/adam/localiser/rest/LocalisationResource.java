@@ -84,6 +84,7 @@ public class LocalisationResource {
 	@POST
 	@Path("/shortest-route")
 	public List<String> findShortestroute(Collection<String> codes) {
+		List<Localisation> localisations = locationDAO.getAll(codes);
 		return null;
 	}
 
