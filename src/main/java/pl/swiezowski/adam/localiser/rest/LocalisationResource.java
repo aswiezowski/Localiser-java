@@ -15,9 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import pl.swiezowski.adam.localiser.dto.CreateResponseDTO;
-import pl.swiezowski.adam.localiser.dto.CreateResponseDTOImpl;
 import pl.swiezowski.adam.localiser.dto.ResponseDTO;
-import pl.swiezowski.adam.localiser.dto.ResponseDTOImpl;
 import pl.swiezowski.adam.localiser.entities.Localisation;
 import pl.swiezowski.adam.localiser.hibernate.LocalisationDAO;
 import pl.swiezowski.adam.localiser.logic.CodeGenerator;
@@ -40,13 +38,15 @@ public class LocalisationResource {
 		localisation.setCode(linkGenerator.generateLink());
 		if (!localisation.isValid()) {
 			return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
-					.entity(new ResponseDTOImpl("Localisation is invalid!")).build();
+					.entity(new ResponseDTO("Localisation is invalid!")).build();
 		}
 		locationDAO.save(localisation);
-		CreateResponseDTO response = new CreateResponseDTOImpl();
-		response.setStatus("Save successful");
-		response.setCode(localisation.getCode());
-		return Response.status(Response.Status.OK.getStatusCode()).entity(response).build();
+		return Response.status(Response.Status.OK.getStatusCode())
+				.entity(CreateResponseDTO.builder()
+						.code(localisation.getCode())
+						.status("Save successful")
+						.build())
+				.build();
 	}
 
 	@GET
@@ -56,20 +56,15 @@ public class LocalisationResource {
 		if (localisation.isPresent()) {
 			return Response.status(Response.Status.OK.getStatusCode()).entity(localisation.get()).build();
 		}
-		return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(prepareErrorDTO()).build();
-	}
-
-	private ResponseDTO prepareErrorDTO() {
-		ResponseDTO response = new ResponseDTOImpl();
-		response.setStatus("No localisation found!");
-		return response;
+		return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
+				.entity(new ResponseDTO("No localisation found!")).build();
 	}
 
 	@PUT
 	@Path("/{code}")
 	public Response update(@PathParam("code") String code, Localisation localisation) {
 		locationDAO.update(code, localisation);
-		return Response.status(Response.Status.OK.getStatusCode()).entity(new ResponseDTOImpl("Update successful"))
+		return Response.status(Response.Status.OK.getStatusCode()).entity(new ResponseDTO("Update successful"))
 				.build();
 	}
 
@@ -77,7 +72,7 @@ public class LocalisationResource {
 	@Path("/{code}")
 	public Response remove(@PathParam("code") String code) {
 		locationDAO.remove(code);
-		return Response.status(Response.Status.OK.getStatusCode()).entity(new ResponseDTOImpl("Remove successful"))
+		return Response.status(Response.Status.OK.getStatusCode()).entity(new ResponseDTO("Remove successful"))
 				.build();
 	}
 
