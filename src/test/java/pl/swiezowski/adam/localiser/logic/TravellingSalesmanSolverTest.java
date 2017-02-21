@@ -21,12 +21,8 @@ public class TravellingSalesmanSolverTest {
 
 		TravellingSalesmanSolver solver = new TravellingSalesmanSolver();
 		List<Location> path = solver.findShortestPath(loc3, Lists.newArrayList(loc1, loc2, loc3, loc4, loc5));
-		List<Location> path2 = solver.findShortestPath(loc3, Lists.newArrayList(loc2, loc5, loc3, loc4, loc1));
+		List<Location> path2 = solver.findShortestPath(loc1, Lists.newArrayList(loc5, loc2, loc1, loc4, loc3));
 
-		System.out.println(getDistance(path));
-		System.out.println(path);
-		System.out.println(getDistance(path2));
-		System.out.println(path2);
 		Assert.assertTrue(Math.abs(getDistance(path) - getDistance(path2)) < 0.0001);
 	}
 

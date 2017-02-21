@@ -10,98 +10,49 @@ import pl.swiezowski.adam.localiser.entities.Location;
 
 public class TravellingSalesmanSolver {
 
-	double distances[][];
-	List<Location> locations;
+	private double distances[][];
+	private List<Location> locations;
+	private Comparator<List<Integer>> pathComparator = new Comparator<List<Integer>>() {
+		@Override
+		public int compare(List<Integer> path1, List<Integer> path2) {
+			double distance1 = getDistanceWithCycle(path1);
+			double distance2 = getDistanceWithCycle(path2);
+			return Double.compare(distance1, distance2);
+		}
+	};
 
-	public List<Location> findShortestPath(Location startLocalisation, Collection<Location> initialLocations) {
-		PriorityQueue<List<Integer>> queue = new PriorityQueue<>(new Comparator<List<Integer>>() {
-			@Override
-			public int compare(List<Integer> o1, List<Integer> o2) {
-				double distance1 = valueWithCycle(o1);
-				double distance2 = valueWithCycle(o2);
-				return Double.compare(distance1, distance2);
-			}
-		});
+	public List<Location> findShortestPath(Location startLocation, Collection<Location> initialLocations) {
+		if (initialLocations.size() < 3) {
+			return new ArrayList<>(initialLocations);
+		}
+		PriorityQueue<List<Integer>> queue = new PriorityQueue<>(pathComparator);
 		initDistances(initialLocations);
-		List<Integer> v = new ArrayList<>();
-		v.add(0);
-		List<Integer> bestItems = getInitital();
-		double best = valueWithCycle(bestItems);
-		queue.add(v);
-		printTable();
+		List<Integer> solution = new ArrayList<>();
+		solution.add(0);
+		List<Integer> bestPath = getInititalSolution();
+		double bestDistance = getDistanceWithCycle(bestPath);
+		queue.add(solution);
 		while (!queue.isEmpty()) {
-			v = queue.poll();
-			if (bound(v) < best) {
-				List<List<Integer>> children = getChildren(v);
+			solution = queue.poll();
+			if (getLowerBound(solution) < bestDistance) {
+				List<List<Integer>> children = getBranches(solution);
 				for (List<Integer> child : children) {
-					double valueWithCycle = valueWithCycle(child);
-					if (valueWithCycle < best && child.size() == locations.size()) {
-						best = valueWithCycle;
-						bestItems = child;
-						System.out.println("best: " + best + " child:" + child);
-					}
-					double bound = bound(child);
-					if (bound < best) {
-						queue.add(child);
+					if (child.size() == locations.size()) {
+						double distanceWithCycle = getDistanceWithCycle(child);
+						if (distanceWithCycle < bestDistance) {
+							bestDistance = distanceWithCycle;
+							bestPath = child;
+						}
 					} else {
-						System.out.println("best: " + best + " bound: " + bound + " child:" + child);
+						double bound = getLowerBound(child);
+						if (bound < bestDistance) {
+							queue.add(child);
+						}
 					}
 				}
 			}
 		}
-
-		System.out.println("Best: " + bestItems);
-		return getResults(startLocalisation, bestItems);
-	}
-
-	private List<Location> getResults(Location startLocalisation, List<Integer> bestItems) {
-		int startLocalisationId = locations.indexOf(startLocalisation);
-		int start = bestItems.indexOf(startLocalisationId);
-		List<Location> result = new ArrayList<>();
-		for (int i = start; i < bestItems.size(); i++) {
-			result.add(locations.get(bestItems.get(i)));
-		}
-		for (int i = 0; i < start; i++) {
-			result.add(locations.get(bestItems.get(i)));
-		}
-		return result;
-	}
-
-	private List<Integer> getInitital() {
-		List<Integer> initialBest = new ArrayList<>();
-		for (int i = 0; i < distances.length; i++) {
-			initialBest.add(i);
-		}
-		return initialBest;
-	}
-
-	private List<List<Integer>> getChildren(List<Integer> v) {
-		List<List<Integer>> children = new ArrayList<>();
-		for (int i = 0; i < locations.size(); i++) {
-			if (!v.contains(i)) {
-				List<Integer> child = new ArrayList<>(v);
-				child.add(i);
-				if (child.size() == locations.size() - 1) {
-					child.addAll(getMissingNumbers(child));
-				}
-				children.add(child);
-			}
-		}
-		return children;
-	}
-
-	List<Integer> getMissingNumbers(List<Integer> list) {
-		List<Integer> missingNumbers = new ArrayList<>();
-		for (int i = 0; i < locations.size(); i++) {
-			if (!list.contains(i)) {
-				missingNumbers.add(i);
-			}
-		}
-		return missingNumbers;
-	}
-
-	double getDistance(int x, int y) {
-		return distances[x][y];
+		return getResults(startLocation, bestPath);
 	}
 
 	private void initDistances(Collection<Location> initLocations) {
@@ -118,52 +69,90 @@ public class TravellingSalesmanSolver {
 		}
 	}
 
-	private double bound(List<Integer> v) {
-		double minPath = getPathLengths(v);
+	private List<Integer> getInititalSolution() {
+		List<Integer> initialBest = new ArrayList<>();
 		for (int node = 0; node < distances.length; node++) {
-			if (!v.contains(node) || isLastInList(v, node)) {
+			initialBest.add(node);
+		}
+		return initialBest;
+	}
+
+	private double getLowerBound(List<Integer> partialSolution) {
+		double minDistance = getDistance(partialSolution);
+		for (int nodeFrom = 0; nodeFrom < distances.length; nodeFrom++) {
+			if (!partialSolution.contains(nodeFrom) || isLastInList(nodeFrom, partialSolution)) {
 				double min = Double.MAX_VALUE;
-				for (int j = 0; j < distances.length; j++) {
-					if (!v.contains(j)) {
-						min = Math.min(min, getDistance(node, j));
+				for (int nodeTo = 0; nodeTo < distances.length; nodeTo++) {
+					if (!partialSolution.contains(nodeTo)) {
+						min = Math.min(min, getDistance(nodeFrom, nodeTo));
 					}
 				}
-				minPath += min;
+				minDistance += min;
 			}
 		}
-		return minPath;
+		return minDistance;
 	}
 
-	private boolean isLastInList(List<Integer> v, int node) {
-		return v.indexOf(node) + 1 == v.size();
-	}
-
-	private double getPathLengths(List<Integer> localisations) {
-		double distance1 = 0.0;
-		for (int i = 0; i < localisations.size() - 1; i++) {
-			distance1 += getDistance(localisations.get(i), localisations.get(i + 1));
+	private double getDistance(List<Integer> path) {
+		double distance = 0.0;
+		for (int i = 0; i < path.size() - 1; i++) {
+			distance += getDistance(path.get(i), path.get(i + 1));
 		}
-		return distance1;
+		return distance;
 	}
 
-	private double valueWithCycle(List<Integer> localisations) {
-		double distance1 = 0.0;
-		for (int i = 0; i < localisations.size() - 1; i++) {
-			distance1 += getDistance(localisations.get(i), localisations.get(i + 1));
-		}
-		distance1 += getDistance(localisations.get(localisations.size() - 1), localisations.get(0));
-		return distance1;
+	private boolean isLastInList(int item, List<Integer> list) {
+		return list.indexOf(item) + 1 == list.size();
 	}
 
-	void printTable() {
-		System.out.println("----------------------------");
-		for (int i = 0; i < distances.length; i++) {
-			System.out.print(i + "  |");
-			for (int j = 0; j < distances[0].length; j++) {
-				System.out.print(distances[i][j] + "\t|");
+	private List<List<Integer>> getBranches(List<Integer> partialSolution) {
+		List<List<Integer>> branches = new ArrayList<>();
+		for (int node = 0; node < locations.size(); node++) {
+			if (!partialSolution.contains(node)) {
+				List<Integer> branch = new ArrayList<>(partialSolution);
+				branch.add(node);
+				if (branch.size() == locations.size() - 1) {
+					branch.addAll(getMissingNodes(branch));
+				}
+				branches.add(branch);
 			}
-			System.out.println();
 		}
-		System.out.println("----------------------------");
+		return branches;
+	}
+
+	private List<Integer> getMissingNodes(List<Integer> branch) {
+		List<Integer> missingNode = new ArrayList<>();
+		for (int node = 0; node < locations.size(); node++) {
+			if (!branch.contains(node)) {
+				missingNode.add(node);
+			}
+		}
+		return missingNode;
+	}
+
+	private List<Location> getResults(Location startLocation, List<Integer> solution) {
+		int startLocationId = locations.indexOf(startLocation);
+		int startNode = solution.indexOf(startLocationId);
+		List<Location> result = new ArrayList<>();
+		for (int node = startNode; node < solution.size(); node++) {
+			result.add(locations.get(solution.get(node)));
+		}
+		for (int node = 0; node < startNode; node++) {
+			result.add(locations.get(solution.get(node)));
+		}
+		return result;
+	}
+
+	private double getDistance(int startNode, int endNode) {
+		return distances[startNode][endNode];
+	}
+
+	private double getDistanceWithCycle(List<Integer> path) {
+		double distance = 0.0;
+		for (int i = 0; i < path.size() - 1; i++) {
+			distance += getDistance(path.get(i), path.get(i + 1));
+		}
+		distance += getDistance(path.get(path.size() - 1), path.get(0));
+		return distance;
 	}
 }
