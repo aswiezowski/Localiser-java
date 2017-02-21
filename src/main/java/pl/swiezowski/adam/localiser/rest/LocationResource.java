@@ -16,25 +16,25 @@ import javax.ws.rs.core.Response;
 
 import pl.swiezowski.adam.localiser.dto.CreateResponseDTO;
 import pl.swiezowski.adam.localiser.dto.ResponseDTO;
-import pl.swiezowski.adam.localiser.entities.Localisation;
-import pl.swiezowski.adam.localiser.hibernate.LocalisationDAO;
+import pl.swiezowski.adam.localiser.entities.Location;
+import pl.swiezowski.adam.localiser.hibernate.LocationDAO;
 import pl.swiezowski.adam.localiser.logic.CodeGenerator;
 
 @Path("/localisations")
 @Consumes("application/json")
 @Produces("application/json")
-public class LocalisationResource {
+public class LocationResource {
 
-	LocalisationDAO locationDAO;
+	LocationDAO locationDAO;
 	CodeGenerator linkGenerator;
 
-	public LocalisationResource() {
-		locationDAO = new LocalisationDAO();
+	public LocationResource() {
+		locationDAO = new LocationDAO();
 		linkGenerator = new CodeGenerator();
 	}
 
 	@POST
-	public Response save(Localisation localisation) {
+	public Response save(Location localisation) {
 		localisation.setCode(linkGenerator.generateLink());
 		if (!localisation.isValid()) {
 			return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
@@ -52,7 +52,7 @@ public class LocalisationResource {
 	@GET
 	@Path("/{code}")
 	public Response get(@PathParam("code") String code) {
-		Optional<Localisation> localisation = locationDAO.get(code);
+		Optional<Location> localisation = locationDAO.get(code);
 		if (localisation.isPresent()) {
 			return Response.status(Response.Status.OK.getStatusCode()).entity(localisation.get()).build();
 		}
@@ -62,7 +62,7 @@ public class LocalisationResource {
 
 	@PUT
 	@Path("/{code}")
-	public Response update(@PathParam("code") String code, Localisation localisation) {
+	public Response update(@PathParam("code") String code, Location localisation) {
 		locationDAO.update(code, localisation);
 		return Response.status(Response.Status.OK.getStatusCode()).entity(new ResponseDTO("Update successful"))
 				.build();
@@ -78,8 +78,8 @@ public class LocalisationResource {
 
 	@POST
 	@Path("/shortest-route")
-	public List<String> findShortestroute(Collection<String> codes) {
-		List<Localisation> localisations = locationDAO.getAll(codes);
+	public List<String> findShortestRoute(Collection<String> codes) {
+		List<Location> localisations = locationDAO.getAll(codes);
 		return null;
 	}
 

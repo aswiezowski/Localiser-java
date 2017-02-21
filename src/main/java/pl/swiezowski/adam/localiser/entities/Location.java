@@ -9,12 +9,16 @@ import javax.persistence.Table;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Table
 @Entity
 @Data
-public class Localisation {
+@AllArgsConstructor
+@NoArgsConstructor
+public class Location {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +38,17 @@ public class Localisation {
 			return true;
 		}
 		return false;
+	}
+
+	public double distance(Location localisation) {
+		final int R = 6371;
+		Double latDistance = Math.toRadians(localisation.latitude - latitude);
+		Double lonDistance = Math.toRadians(localisation.longitude - longitude);
+		Double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+				+ Math.cos(Math.toRadians(latitude)) * Math.cos(Math.toRadians(localisation.latitude))
+						* Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+		Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		return R * c * 1000;
 	}
 
 }

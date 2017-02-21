@@ -17,8 +17,8 @@ public class Route {
 	@Data
 	@Builder
 	public static class Node {
-		private Localisation startNode;
-		private Localisation endNode;
+		private Location startNode;
+		private Location endNode;
 		private double distance;
 	}
 }
