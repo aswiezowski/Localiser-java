@@ -16,9 +16,12 @@ import javax.ws.rs.core.Response;
 
 import pl.swiezowski.adam.localiser.dto.CreateResponseDTO;
 import pl.swiezowski.adam.localiser.dto.ResponseDTO;
+import pl.swiezowski.adam.localiser.dto.RouteDTO;
 import pl.swiezowski.adam.localiser.entities.Location;
 import pl.swiezowski.adam.localiser.hibernate.LocationDAO;
 import pl.swiezowski.adam.localiser.logic.CodeGenerator;
+import pl.swiezowski.adam.localiser.logic.LocationService;
+import pl.swiezowski.adam.localiser.logic.TravellingSalesmanSolver;
 
 @Path("/localisations")
 @Consumes("application/json")
@@ -35,7 +38,7 @@ public class LocationResource {
 
 	@POST
 	public Response save(Location localisation) {
-		localisation.setCode(linkGenerator.generateLink());
+		localisation.setCode(linkGenerator.generateCode());
 		if (!localisation.isValid()) {
 			return Response.status(Response.Status.BAD_REQUEST.getStatusCode())
 					.entity(new ResponseDTO("Localisation is invalid!")).build();
@@ -78,9 +81,13 @@ public class LocationResource {
 
 	@POST
 	@Path("/shortest-route")
-	public List<String> findShortestRoute(Collection<String> codes) {
+	public Response findShortestRoute(Collection<String> codes) {
 		List<Location> localisations = locationDAO.getAll(codes);
-		return null;
+		TravellingSalesmanSolver solver = new TravellingSalesmanSolver();
+		List<Location> path = solver.findShortestPath(localisations.get(0), localisations);
+		RouteDTO routeDTO = RouteDTO.builder().locations(path).distance(LocationService.getDistance(path)).build();
+		return Response.status(Response.Status.OK.getStatusCode()).entity(routeDTO)
+				.build();
 	}
 
 }

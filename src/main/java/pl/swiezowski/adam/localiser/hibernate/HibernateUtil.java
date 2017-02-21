@@ -15,8 +15,9 @@ public class HibernateUtil {
 			return new MetadataSources(registry).buildMetadata().buildSessionFactory();
 		} catch (Exception e) {
 			StandardServiceRegistryBuilder.destroy(registry);
+			System.err.println("Cannot build session factory");
+			throw e;
 		}
-		return sessionFactory;
 	}
 
 	public static SessionFactory getSessionFactory() {

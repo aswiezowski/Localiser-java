@@ -23,7 +23,7 @@
 		<property name="hibernate.hbm2ddl.auto">
 			update
 		</property>
-		<mapping class="pl.swiezowski.adam.localiser.entities.Localisation" />
+		<mapping class="pl.swiezowski.adam.localiser.entities.Location" />
 		<mapping class="pl.swiezowski.adam.localiser.entities.Person" />
 	</session-factory>
 </hibernate-configuration>

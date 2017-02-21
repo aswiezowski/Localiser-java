@@ -11,7 +11,7 @@ public class CodeGenerator {
 		random = new SecureRandom();
 	}
 	
-	public String generateLink() {
+	public String generateCode() {
 		byte bytes[] = new byte[6];
 		random.nextBytes(bytes);
 		return Base64.getEncoder().encodeToString(bytes).replace("+", "a").replace("/", "z");

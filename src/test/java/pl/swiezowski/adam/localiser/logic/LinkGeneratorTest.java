@@ -18,7 +18,7 @@ public class LinkGeneratorTest {
 		CodeGenerator linkGenerator = new CodeGenerator();
 		HashSet<String> links = new HashSet<String>(100);
 		for(int i=0; i<NUMBER_OF_TESTED_LINKS; i++){
-			String link = linkGenerator.generateLink();
+			String link = linkGenerator.generateCode();
 			assertTrue(links.add(link));
 		}
 	}
@@ -28,7 +28,7 @@ public class LinkGeneratorTest {
 		CodeGenerator linkGenerator = new CodeGenerator();
 		Pattern pattern = Pattern.compile(LINK_PATTERN);
 		for(int i=0; i<NUMBER_OF_TESTED_LINKS; i++){
-			String link = linkGenerator.generateLink();
+			String link = linkGenerator.generateCode();
 			Matcher matcher = pattern.matcher(link);
 			assertTrue(matcher.matches());
 		}

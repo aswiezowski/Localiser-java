@@ -13,7 +13,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import pl.swiezowski.adam.localiser.entities.Location;
-import pl.swiezowski.adam.localiser.entities.Localisation_;
+import pl.swiezowski.adam.localiser.entities.Location_;
 
 public class LocationDAO {
 
@@ -55,7 +55,7 @@ public class LocationDAO {
 		CriteriaQuery<Location> criteria = builder.createQuery(Location.class);
 		Root<Location> root = criteria.from(Location.class);
 		criteria.select(root);
-		criteria.where(root.get(Localisation_.code).in(code));
+		criteria.where(root.get(Location_.code).in(code));
 		return session.createQuery(criteria).getResultList();
 	}
 
@@ -74,6 +74,7 @@ public class LocationDAO {
 				.orElseThrow(() -> new IllegalStateException("No localisation with code: " + code));
 		oldLocalisation.setLatitude(localisation.getLatitude());
 		oldLocalisation.setLongitude(localisation.getLongitude());
+		oldLocalisation.setDescription(localisation.getDescription());
 		session.update(oldLocalisation);
 		transaction.commit();
 		session.close();

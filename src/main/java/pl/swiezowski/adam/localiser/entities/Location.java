@@ -31,6 +31,8 @@ public class Location {
 	private Double longitude;
 	@Column
 	private String code;
+	@Column
+	private String description;
 
 	@JsonIgnore
 	public boolean isValid() {
@@ -38,6 +40,12 @@ public class Location {
 			return true;
 		}
 		return false;
+	}
+
+	public Location(double latitude, double longitude, String code) {
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.code = code;
 	}
 
 	public double distance(Location localisation) {
