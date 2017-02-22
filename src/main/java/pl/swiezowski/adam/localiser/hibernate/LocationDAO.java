@@ -71,7 +71,7 @@ public class LocationDAO {
 		Session session = openSession();
 		Transaction transaction = session.beginTransaction();
 		Location oldLocalisation = getLocalisationInSession(code, session)
-				.orElseThrow(() -> new IllegalStateException("No localisation with code: " + code));
+				.orElseThrow(() -> new IllegalStateException("No location with code: " + code));
 		oldLocalisation.setLatitude(localisation.getLatitude());
 		oldLocalisation.setLongitude(localisation.getLongitude());
 		oldLocalisation.setDescription(localisation.getDescription());
@@ -84,7 +84,7 @@ public class LocationDAO {
 		Session session = openSession();
 		Transaction transaction = session.beginTransaction();
 		Location oldLocalisation = getLocalisationInSession(code, session)
-				.orElseThrow(() -> new IllegalStateException("No localisation with code: " + code));
+				.orElseThrow(() -> new IllegalStateException("No location with code: " + code));
 		session.delete(oldLocalisation);
 		transaction.commit();
 

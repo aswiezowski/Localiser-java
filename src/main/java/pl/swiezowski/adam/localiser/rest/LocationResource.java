@@ -23,7 +23,7 @@ import pl.swiezowski.adam.localiser.logic.CodeGenerator;
 import pl.swiezowski.adam.localiser.logic.LocationService;
 import pl.swiezowski.adam.localiser.logic.TravellingSalesmanSolver;
 
-@Path("/localisations")
+@Path("/locations")
 @Consumes("application/json")
 @Produces("application/json")
 public class LocationResource {
