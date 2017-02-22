@@ -18,7 +18,7 @@
 			localiser_jee
 		</property>
 		<property name="hibernate.connection.password">
-			}Tf,c104&amp;[~m
+			${hibernate_password}
 		</property>
 		<property name="hibernate.hbm2ddl.auto">
 			update
