@@ -22,7 +22,7 @@ public class TravellingSalesmanSolver {
 	};
 
 	public List<Location> findShortestPath(Location startLocation, Collection<Location> initialLocations) {
-		if (initialLocations.size() < 3) {
+		if (initialLocations.size() < 4) {
 			return new ArrayList<>(initialLocations);
 		}
 		PriorityQueue<List<Integer>> queue = new PriorityQueue<>(pathComparator);

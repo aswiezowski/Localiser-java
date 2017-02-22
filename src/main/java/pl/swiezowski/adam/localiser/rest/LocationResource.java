@@ -20,7 +20,7 @@ import pl.swiezowski.adam.localiser.dto.RouteDTO;
 import pl.swiezowski.adam.localiser.entities.Location;
 import pl.swiezowski.adam.localiser.hibernate.LocationDAO;
 import pl.swiezowski.adam.localiser.logic.CodeGenerator;
-import pl.swiezowski.adam.localiser.logic.LocationService;
+import pl.swiezowski.adam.localiser.logic.DistanceCalculator;
 import pl.swiezowski.adam.localiser.logic.TravellingSalesmanSolver;
 
 @Path("/locations")
@@ -28,13 +28,9 @@ import pl.swiezowski.adam.localiser.logic.TravellingSalesmanSolver;
 @Produces("application/json")
 public class LocationResource {
 
-	LocationDAO locationDAO;
-	CodeGenerator linkGenerator;
-
-	public LocationResource() {
-		locationDAO = new LocationDAO();
-		linkGenerator = new CodeGenerator();
-	}
+	private DistanceCalculator distanceCalculator = new DistanceCalculator();
+	private LocationDAO locationDAO = new LocationDAO();
+	private CodeGenerator linkGenerator = new CodeGenerator();
 
 	@POST
 	public Response save(Location localisation) {
@@ -85,7 +81,7 @@ public class LocationResource {
 		List<Location> localisations = locationDAO.getAll(codes);
 		TravellingSalesmanSolver solver = new TravellingSalesmanSolver();
 		List<Location> path = solver.findShortestPath(localisations.get(0), localisations);
-		RouteDTO routeDTO = RouteDTO.builder().locations(path).distance(LocationService.getDistance(path)).build();
+		RouteDTO routeDTO = RouteDTO.builder().locations(path).distance(distanceCalculator.getDistance(path)).build();
 		return Response.status(Response.Status.OK.getStatusCode()).entity(routeDTO)
 				.build();
 	}
