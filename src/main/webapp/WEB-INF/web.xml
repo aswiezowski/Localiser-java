@@ -9,7 +9,7 @@
 		<servlet-name>jersey-servlet</servlet-name>
 		<servlet-class>
                      com.sun.jersey.spi.container.servlet.ServletContainer
-                </servlet-class>
+        </servlet-class>
 		<init-param>
 		     <param-name>com.sun.jersey.config.property.packages</param-name>
 		     <param-value>pl.swiezowski.adam.localiser.rest</param-value>

@@ -40,10 +40,10 @@ public class TravellingSalesmanSolverTest {
 	@Test
 	public void shouldReturnLessOrEqualPathDistance() {
 		Location loc1 = new Location(50.061424, 19.937340, "Main Square");
-		Location loc2 = new Location(50.054877, 19.893238, "Koscioszko Mound");
+		Location loc2 = new Location(50.054640, 19.893508, "Koscioszko Mound");
 		Location loc3 = new Location(50.054877, 19.893238, "Pilsudzki Mound");
 		Location loc4 = new Location(50.037975, 19.958465, "Krak Mound");
-		Location loc5 = new Location(50.054877, 19.893238, "Wanda Mound");
+		Location loc5 = new Location(50.070075, 20.068145, "Wanda Mound");
 		ArrayList<Location> initialLocations = Lists.newArrayList(loc1, loc2, loc3, loc4, loc5);
 
 		List<Location> path = solver.findShortestPath(loc3, initialLocations);

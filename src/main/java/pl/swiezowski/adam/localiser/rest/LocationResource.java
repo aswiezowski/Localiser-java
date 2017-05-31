@@ -24,8 +24,8 @@ import pl.swiezowski.adam.localiser.logic.DistanceCalculator;
 import pl.swiezowski.adam.localiser.logic.TravellingSalesmanSolver;
 
 @Path("/locations")
-@Consumes("application/json")
-@Produces("application/json")
+@Consumes("application/json;charset=utf-8")
+@Produces("application/json;charset=utf-8")
 public class LocationResource {
 
 	private DistanceCalculator distanceCalculator = new DistanceCalculator();

@@ -12,30 +12,49 @@ public class TravellingSalesmanSolver {
 
 	private double distances[][];
 	private List<Location> locations;
-	private Comparator<List<Integer>> pathComparator = new Comparator<List<Integer>>() {
+	private Comparator<Path> pathComparator = new Comparator<Path>() {
 		@Override
-		public int compare(List<Integer> path1, List<Integer> path2) {
-			double distance1 = getDistanceWithCycle(path1);
-			double distance2 = getDistanceWithCycle(path2);
+		public int compare(Path path1, Path path2) {
+			double distance1 = path1.getDistance();
+			double distance2 = path2.getDistance();
 			return Double.compare(distance1, distance2);
 		}
 	};
+	
+	private class Path {
+		List<Integer> path = new ArrayList();
+		Double distance;
+		
+		public Path() {
+		}
+		
+		public Path(List<Integer> path){
+			this.path = path;
+		}
+		
+		public Double getDistance() {
+			if (distance == null) {
+				distance = getDistanceWithCycle(path);
+			}
+			return distance;
+		}
+	}
 
 	public List<Location> findShortestPath(Location startLocation, Collection<Location> initialLocations) {
 		if (initialLocations.size() < 4) {
 			return new ArrayList<>(initialLocations);
 		}
-		PriorityQueue<List<Integer>> queue = new PriorityQueue<>(pathComparator);
+		PriorityQueue<Path> queue = new PriorityQueue<>(pathComparator);
 		initDistances(initialLocations);
-		List<Integer> solution = new ArrayList<>();
-		solution.add(0);
+		Path solution = new Path();
+		solution.path.add(0);
 		List<Integer> bestPath = getInititalSolution();
 		double bestDistance = getDistanceWithCycle(bestPath);
 		queue.add(solution);
 		while (!queue.isEmpty()) {
 			solution = queue.poll();
-			if (getLowerBound(solution) < bestDistance) {
-				List<List<Integer>> children = getBranches(solution);
+			if (getLowerBound(solution.path) < bestDistance) {
+				List<List<Integer>> children = getBranches(solution.path);
 				for (List<Integer> child : children) {
 					if (child.size() == locations.size()) {
 						double distanceWithCycle = getDistanceWithCycle(child);
@@ -46,7 +65,7 @@ public class TravellingSalesmanSolver {
 					} else {
 						double bound = getLowerBound(child);
 						if (bound < bestDistance) {
-							queue.add(child);
+							queue.add(new Path(child));
 						}
 					}
 				}
@@ -143,7 +162,7 @@ public class TravellingSalesmanSolver {
 		return result;
 	}
 
-	private double getDistance(int startNode, int endNode) {
+	private Double getDistance(Integer startNode, Integer endNode) {
 		return distances[startNode][endNode];
 	}
 
